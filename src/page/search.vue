@@ -108,7 +108,7 @@
                     </font>
                 </span>
             </div>
-            <div class="movieFrom">
+           <!-- <div class="movieFrom">
                 <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="电影名称：" prop="movieName">
                         <el-input hide-required-asterisk v-model="ruleForm2.movieName" autocomplete="off"></el-input>
@@ -124,7 +124,7 @@
                         <el-button @click="resetForm('ruleForm2')">重置</el-button>
                     </el-form-item>
                 </el-form>
-            </div>
+            </div>-->
             <div >
                 <el-dialog id="playerDialog"
                         :visible.sync="dialogVisible"
@@ -138,17 +138,29 @@
                 </el-dialog>
             </div>
             <div style="text-align:center">
-                <el-dialog
+                <el-dialog id="loginDialog"
                         title="登录"
                         :visible.sync="LoginVisible"
                         width="30%"
-                        :before-close="handleClose">
+                        :before-close="handleLoginDialogClose">
                     <div>
                         <loginEml></loginEml>
                     </div>
                 </el-dialog>
             </div>
+            <div style="text-align:center">
+                <el-dialog id="registerDialog"
+                           title="注册"
+                           :visible.sync="registerVisible"
+                           width="30%"
+                           :before-close="handleRegisterDialogClose">
+                    <div>
+                        <registerEml></registerEml>
+                    </div>
+                </el-dialog>
+            </div>
             <el-button size="small" type="success" @click.native="loginShowSwitch(true)">弹出login框</el-button>
+            <el-button size="small" type="success" @click.native="registerShowSwitch(true)">弹出register框</el-button>
         </div>
 </div>
 </template>
@@ -159,6 +171,7 @@
     import my_player  from "../components/PlayerElement";
     import _global from "../components/Global";
     import loginEml from "../components/LoginElement";
+    import registerEml from "../components/RegisterElement";
 
 
     export default {
@@ -214,6 +227,7 @@
                 pageSize:4,
                 dialogVisible: false,
                 LoginVisible:false,
+                registerVisible:false,
                 movieData:{
                     videoName:"", //视频名称
                     videoUrl:"",  //视频地址
@@ -362,6 +376,12 @@
                     })
                     .catch(_ => {});*/
             },
+            handleLoginDialogClose(done){
+                done();
+            },
+            handleRegisterDialogClose(done){
+                done();
+            },
             playerMovie(item){
                 if(item === undefined || item.videoSourceList.length === 0){
                     this.errMsg('哎呀~ 视频地址不见啦,换一个看看吧');
@@ -395,13 +415,17 @@
                     background: 'rgba(0, 0, 0, 0.7)'
                 });
             },
-            loginShowSwitch(bol){
+            loginShowSwitch(){
                 this.LoginVisible = true;
+            },
+            registerShowSwitch(){
+                this.registerVisible = true;
             }
         },
         components: {
             my_player: my_player,
-            loginEml:loginEml
+            loginEml:loginEml,
+            registerEml:registerEml
         },
         mounted() {
             //初始化影片分类信息
@@ -598,9 +622,15 @@
         font-size: 14px;
         background-color: black;
     }
-    .el-input{
-        width: 100% !important;
+
+    #loginDialog .el-dialog {
+        width: 400px !important;
     }
+
+    .el-form-item__content {
+        margin-left: 15px !important;
+    }
+
     .el-input-group__append button.el-button,
     .el-input-group__append div.el-select
     .el-input__inner,
