@@ -126,7 +126,7 @@
                 </el-form>
             </div>
             <div >
-                <el-dialog
+                <el-dialog id="playerDialog"
                         :visible.sync="dialogVisible"
                         width="50%"
                         :before-close="handleClose"
@@ -137,6 +137,18 @@
                     </div>
                 </el-dialog>
             </div>
+            <div style="text-align:center">
+                <el-dialog
+                        title="登录"
+                        :visible.sync="LoginVisible"
+                        width="30%"
+                        :before-close="handleClose">
+                    <div>
+                        <loginEml></loginEml>
+                    </div>
+                </el-dialog>
+            </div>
+            <el-button size="small" type="success" @click.native="loginShowSwitch(true)">弹出login框</el-button>
         </div>
 </div>
 </template>
@@ -146,6 +158,7 @@
     import "bootstrap-vue/dist/bootstrap-vue.css";
     import my_player  from "../components/PlayerElement";
     import _global from "../components/Global";
+    import loginEml from "../components/LoginElement";
 
 
     export default {
@@ -200,6 +213,7 @@
                 page:1,
                 pageSize:4,
                 dialogVisible: false,
+                LoginVisible:false,
                 movieData:{
                     videoName:"", //视频名称
                     videoUrl:"",  //视频地址
@@ -380,10 +394,14 @@
                     spinner: 'el-icon-loading',
                     background: 'rgba(0, 0, 0, 0.7)'
                 });
+            },
+            loginShowSwitch(bol){
+                this.LoginVisible = true;
             }
         },
         components: {
-            my_player: my_player
+            my_player: my_player,
+            loginEml:loginEml
         },
         mounted() {
             //初始化影片分类信息
@@ -569,12 +587,12 @@
     }
 
     /**重写elementUi css样式*/
-    .el-dialog__header {
+    #playerDialog .el-dialog__header {
         background-color: black;
         text-align:center;
         padding: 10px 0 0 !important;
     }
-    .el-dialog__body {
+    #playerDialog .el-dialog__body {
         padding: 5px 5px !important;
         color: #020b00;
         font-size: 14px;
