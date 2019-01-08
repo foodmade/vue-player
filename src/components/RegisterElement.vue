@@ -1,6 +1,6 @@
 <template>
     <div>
-        <span>Register Home</span>
+        <span>Register Home Test</span>
     </div>
 </template>
 
