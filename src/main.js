@@ -9,7 +9,7 @@ import "lib-flexible";
 // import 'videojs-contrib-hls'
 import router from "./routers/router"
 import {post,fetch,patch,put} from './common/js/http'
-import {isPc} from './common/js/utils';
+import {isPc,errMsg} from './common/js/utils';
 import 'element-ui/lib/theme-chalk/index.css';
 import 'vue-video-player/src/custom-theme.css';
 
@@ -21,6 +21,7 @@ Vue.prototype.$fetch=fetch;
 Vue.prototype.$patch=patch;
 Vue.prototype.$put=put;
 Vue.prototype.$isPc=isPc;
+Vue.prototype.$errMsg=errMsg;
 
 Vue.config.productionTip = false;
 

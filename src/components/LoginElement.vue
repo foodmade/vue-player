@@ -2,14 +2,14 @@
     <div style="text-align:center">
         <el-form :model="userInfo" ref="userInfo" label-width="100px" class="demo-ruleForm">
             <el-form-item>
-                <el-input class="loginInput"
+                <el-input class="CInput"
                         placeholder="邮箱/手机号码"
                         prefix-icon="custom-user-zhanghao1"
                         v-model="userInfo.username">
                 </el-input>
             </el-form-item>
             <el-form-item>
-                <el-input class="loginInput"
+                <el-input class="CInput"
                         placeholder="请输入密码"
                         prefix-icon="custom-user-mima1"
                         v-model="userInfo.password">
@@ -44,12 +44,24 @@
                 rememberPwd:1
             };
         },
+        props:{
+            loginSwitch:{
+                type:Boolean,
+                default:false
+            },
+            registerSwitch:{
+                type:Boolean,
+                default:false
+            }
+        },
         methods: {
             submitForm() {
                 alert(JSON.stringify(this.userInfo))
             },
+            //更新父组件的状态值 弹出注册框
             registerApi(){
-                alert('register')
+                this.$emit('update:loginSwitch', false);
+                this.$emit('update:registerSwitch', true);
             }
         }
     }
@@ -59,7 +71,7 @@
         float: right !important;
     }
 
-    .loginInput{
+    .CInput{
         width: 100% !important;
     }
 

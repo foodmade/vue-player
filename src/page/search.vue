@@ -36,10 +36,6 @@
                             clearable>
                     </el-input>-->
 
-                    <!--<el-cascader
-                            :options="options"
-                            v-model="selectedOptions3">
-                    </el-cascader>-->
 
                     <el-input  id="searchInput" clearable @keyup.enter.native="EnterPress" placeholder=" 请输电影昵称~ 回车开始搜索~请不要带有特殊符号" v-model="searchName" class="input-with-select">
                         <el-select @change="getMovies(2)" v-model="searchType" slot="prepend" placeholder="搜索类型">
@@ -144,7 +140,7 @@
                         width="30%"
                         :before-close="handleLoginDialogClose">
                     <div>
-                        <loginEml></loginEml>
+                        <loginEml :registerSwitch.sync="registerVisible" :loginSwitch.sync="LoginVisible"></loginEml>
                     </div>
                 </el-dialog>
             </div>
@@ -234,19 +230,7 @@
                     videoPoster:"", //封面图
                     visible:true
                 },
-                loading:null,
-                options: [{
-                    value: 'parent',
-                    label: '电影',
-                    children: [{
-                        value: 'dongzuo',
-                        label: '动作片',
-                    }, {
-                        value: 'aiqing',
-                        label: '爱情片',
-                    }]
-                }],
-                selectedOptions3: ['zujian', 'data', 'tag']
+                loading:null
             }
         },
         methods:{
@@ -624,6 +608,10 @@
     }
 
     #loginDialog .el-dialog {
+        width: 400px !important;
+    }
+
+    #registerDialog .el-dialog{
         width: 400px !important;
     }
 

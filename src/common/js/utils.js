@@ -8,3 +8,11 @@ export function isPc(){
     }
     return flag;
 }
+
+export function errMsg(msg) {
+    this.$message({
+        showClose: true,
+        message: msg,
+        type: 'error'
+    });
+}
