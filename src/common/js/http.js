@@ -3,6 +3,7 @@ import { Message } from 'element-ui';
 
 axios.defaults.timeout = 15000;
 axios.defaults.baseURL ='';
+axios.defaults.withCredentials = true
 
 
 //http request 拦截器

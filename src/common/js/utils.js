@@ -16,3 +16,11 @@ export function errMsg(msg) {
         type: 'error'
     });
 }
+
+export function successMsg(msg) {
+    this.$message({
+        showClose: true,
+        message: msg,
+        type: 'success'
+    });
+}

@@ -14,7 +14,7 @@
                           prefix-icon="custom-user-yanzhengma"
                           v-model="registerData.code">
                 </el-input>
-                <el-button type="success">获取验证码</el-button>
+                <el-button id="sendCodeBut" @click.native="sendEmail" type="success" :disabled="authCodeDisabled" :loading="butLoading">获取验证码</el-button>
             </el-form-item>
             <el-form-item prop="usernick" :rules="[{ required: true, message: '请输入昵称', trigger: 'blur' },
                                                     { min: 1, max: 5, message: '长度在 1 到 5 个字符', trigger: 'change' }]">
@@ -46,6 +46,7 @@
 </template>
 
 <script>
+    import _global from "../components/Global";
     export default {
         name: "RegisterElement",
         data() {
@@ -83,14 +84,11 @@
                         { validator: validEmail, trigger: 'blur'  },
                     ]
                 },
+                butLoading:false,
+                authCodeDisabled:false
             };
         },
         methods:{
-    /*        checkIsExist(){
-                if(this.registerData.emailMobile === ''){
-                    this.$errMsg('邮箱不能为空');
-                }
-            },*/
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
@@ -108,6 +106,29 @@
                     return false;
                 }
                 return true;
+            },
+            sendEmail(){
+                if(this.emailMobile === ''){
+                    this.$errMsg('请输入邮箱');
+                    return;
+                }
+                this.butStatusSwitch(true);
+                var url = _global._CONST_PARAM._HOST +"/sendEmail.do?email="+this.registerData.emailMobile;
+                this.$fetch(url)
+                    .then((rsp)=>{
+                        if(rsp.code === '200'){
+                            this.$successMsg('邮件发送成功,请注意查看邮件');
+                        }else{
+                            this.$errMsg('邮件发送失败,code:'+rsp.code);
+                        }
+                    })
+                    .catch((rsp)=>{
+                        this.$errMsg('邮件发送异常,请稍后重试 code:'+rsp.code);
+                    })
+            },
+            butStatusSwitch(bol){
+                this.butLoading = bol;
+                this.authCodeDisabled = bol;
             }
         }
     }

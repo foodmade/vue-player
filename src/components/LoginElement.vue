@@ -1,4 +1,4 @@
-<template>
+<template xmlns:v-on="http://www.w3.org/1999/xhtml">
     <div style="text-align:center">
         <el-form :model="userInfo" ref="userInfo" label-width="100px" class="demo-ruleForm">
             <el-form-item>
