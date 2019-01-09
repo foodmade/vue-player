@@ -3,7 +3,7 @@
         <el-form :model="registerData" :rules="rules" ref="registerData" label-width="100px" class="demo-ruleForm">
             <el-form-item prop="emailMobile">
                 <el-input class="CInput"
-                          placeholder="邮箱"
+                          placeholder="QQ邮箱"
                           prefix-icon="custom-user-youjian"
                           v-model="registerData.emailMobile">
                 </el-input>
@@ -17,7 +17,7 @@
                 <el-button id="sendCodeBut" @click.native="sendEmail" type="success" :disabled="authCodeDisabled" :loading="butLoading">获取验证码</el-button>
             </el-form-item>
             <el-form-item prop="usernick" :rules="[{ required: true, message: '请输入昵称', trigger: 'blur' },
-                                                    { min: 1, max: 5, message: '长度在 1 到 5 个字符', trigger: 'change' }]">
+                                                    { min: 1, max: 10, message: '长度在 1 到 5 个字符', trigger: 'change' }]">
                 <el-input class="CInput"
                           placeholder="昵称"
                           prefix-icon="custom-user-nicheng"
@@ -108,12 +108,18 @@
                 return true;
             },
             sendEmail(){
-                if(this.emailMobile === ''){
+                let email = this.registerData.emailMobile;
+                if(email === '' || !email){
                     this.$errMsg('请输入邮箱');
                     return;
                 }
+                debugger
+                if(!this.checkEmailFormat(email)){
+                    this.$errMsg('邮箱格式错误');
+                    return;
+                }
                 this.butStatusSwitch(true);
-                var url = _global._CONST_PARAM._HOST +"/sendEmail.do?email="+this.registerData.emailMobile;
+                const url = _global._CONST_PARAM._HOST + "/sendEmail.do?email=" + this.registerData.emailMobile;
                 this.$fetch(url)
                     .then((rsp)=>{
                         if(rsp.code === '200'){
