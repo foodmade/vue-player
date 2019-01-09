@@ -5,7 +5,7 @@
                 <el-input class="CInput"
                           placeholder="QQ邮箱"
                           prefix-icon="custom-user-youjian"
-                          v-model="registerData.emailMobile">
+                          v-model="registerData.email">
                 </el-input>
             </el-form-item>
             <el-form-item prop="code" :rules="[{ required: true, message: '请输入验证码', trigger: 'blur' },{ min: 4, max: 4, message: '请输入4个字符', trigger: 'change' }]">
@@ -14,7 +14,7 @@
                           prefix-icon="custom-user-yanzhengma"
                           v-model="registerData.code">
                 </el-input>
-                <el-button id="sendCodeBut" @click.native="sendEmail" type="success" :disabled="authCodeDisabled" :loading="butLoading">获取验证码</el-button>
+                <el-button id="sendCodeBut" @click.native="sendEmail" type="success" :disabled="authCodeDisabled" :loading="butLoading">{{sendCodeBut}}</el-button>
             </el-form-item>
             <el-form-item prop="usernick" :rules="[{ required: true, message: '请输入昵称', trigger: 'blur' },
                                                     { min: 1, max: 10, message: '长度在 1 到 5 个字符', trigger: 'change' }]">
@@ -70,31 +70,40 @@
             };
             return {
                 registerData: {
-                    emailMobile: '',
+                    email: '',
                     usernick: '',
                     password: '',
                     confirmPassword:'',
                     code: ''
                 },
+                errMsgConst:{
+                    pleaseOutEmail:'请输入邮箱',
+                    emailFormatInvalid:'邮箱格式错误',
+                    sendSuccess:'邮件发送成功,请注意查看邮件'
+                },
+                sendCodeButDefaultVal:'获取验证码',
+                defaultCodeTotalTime:60,
                 rules:{
                     confirmPassword:[
                         { validator: validateConfirmPassword, trigger: 'blur' }
                     ],
-                    emailMobile:[
+                    email:[
                         { validator: validEmail, trigger: 'blur'  },
                     ]
                 },
                 butLoading:false,
-                authCodeDisabled:false
+                authCodeDisabled:false,
+                retryTime:0,
+                sendCodeBut:'',
+                codeTimer:null
             };
         },
         methods:{
             submitForm(formName) {
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        alert('submit!');
+                        this.submitAccountInfo();
                     } else {
-                        console.log('error submit!!');
                         return false;
                     }
                 });
@@ -108,38 +117,67 @@
                 return true;
             },
             sendEmail(){
-                let email = this.registerData.emailMobile;
+                let email = this.registerData.email;
                 if(email === '' || !email){
-                    this.$errMsg('请输入邮箱');
+                    this.$errMsg(this.errMsgConst.pleaseOutEmail);
                     return;
                 }
-                debugger
                 if(!this.checkEmailFormat(email)){
-                    this.$errMsg('邮箱格式错误');
+                    this.$errMsg(this.errMsgConst.emailFormatInvalid);
                     return;
                 }
-                this.butStatusSwitch(true);
-                const url = _global._CONST_PARAM._HOST + "/sendEmail.do?email=" + this.registerData.emailMobile;
+                const url = _global._CONST_PARAM._HOST + "/sendEmail.do?email=" + this.registerData.email;
                 this.$fetch(url)
                     .then((rsp)=>{
                         if(rsp.code === '200'){
-                            this.$successMsg('邮件发送成功,请注意查看邮件');
+                            this.loadingSendCodeBut();
+                            this.$successMsg(this.errMsgConst.sendSuccess);
                         }else{
-                            this.$errMsg('邮件发送失败,code:'+rsp.code);
+                            this.$errMsg(rsp.message);
                         }
                     })
                     .catch((rsp)=>{
                         this.$errMsg('邮件发送异常,请稍后重试 code:'+rsp.code);
                     })
             },
-            butStatusSwitch(bol){
-                this.butLoading = bol;
-                this.authCodeDisabled = bol;
+            loadingSendCodeBut(){
+                this.startCodeTimer();
+                this.butLoading = true;
+                this.sendCodeBut = this.defaultCodeTotalTime + 'S';
+                this.authCodeDisabled = true;
+            },
+            initSendCodeBut(){
+                this.butLoading = false;
+                this.authCodeDisabled = false;
+                this.sendCodeBut = this.sendCodeButDefaultVal;
+            },
+            startCodeTimer(){
+                let totalTime = this.defaultCodeTotalTime;
+                this.codeTimer = setInterval( () => {
+                    if(totalTime <= 0){
+                        this.clearIntervalTimer(this.codeTimer);
+                        this.initSendCodeBut();
+                        return;
+                    }
+                    this.sendCodeBut = --totalTime + 'S';
+                }, 1000)
+            },
+            clearIntervalTimer(timer){
+                clearInterval(timer);
+            },
+            submitAccountInfo(){
+
             }
+        },
+        mounted() {
+            this.sendCodeBut = this.sendCodeButDefaultVal;
         }
     }
 </script>
 
 <style scoped>
+    #sendCodeBut{
+        margin-left: -70px !important;
+    }
 
 </style>
