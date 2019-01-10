@@ -70,7 +70,7 @@
             };
             return {
                 registerData: {
-                    email: '',
+                    username: '',
                     usernick: '',
                     password: '',
                     confirmPassword:'',
@@ -117,7 +117,7 @@
                 return true;
             },
             sendEmail(){
-                let email = this.registerData.email;
+                let email = this.registerData.username;
                 if(email === '' || !email){
                     this.$errMsg(this.errMsgConst.pleaseOutEmail);
                     return;
@@ -166,7 +166,13 @@
                 clearInterval(timer);
             },
             submitAccountInfo(){
-
+                const url = _global._CONST_PARAM._HOST + "/registerAccount.do";
+                this.$post(url,this.registerData)
+                    .then((rsp) =>{
+                        this.$successMsg('success');
+                }).catch((rsp)=>{
+                    this.$errMsg('fail');
+                })
             }
         },
         mounted() {
