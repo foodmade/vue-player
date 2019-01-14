@@ -24,3 +24,4 @@ export function successMsg(msg) {
         type: 'success'
     });
 }
+

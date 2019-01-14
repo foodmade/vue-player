@@ -73,6 +73,11 @@
                 this.$emit('update:loginSwitch', false);
                 this.$emit('update:registerSwitch', true);
             },
+
+            closeLoginWindow(){
+                this.$emit('update:loginSwitch', false);
+            },
+
             login(){
                 if(this.userInfo.username === ''){
                     this.$errMsg('请输入邮箱');
@@ -85,11 +90,13 @@
                     .then((rsp) => {
                         if(rsp.code === _global._CONST_PARAM._SUCCESS_CODE){
                             this.$successMsg('登陆成功');
+                            this.GLOBAL.refreshLoginStatus(rsp.responseBody);
+                            this.closeLoginWindow();
                         }else{
                             this.$errMsg('登陆失败 原因:'+rsp.message);
                         }
                     })
-            }
+            },
         }
     }
 </script>

@@ -99,10 +99,11 @@
                     ]
                 },
                 butLoading:false,
-                authCodeDisabled:false,
+                authCodeDisabled:true,
                 retryTime:0,
                 sendCodeBut:'',
-                codeTimer:null
+                codeTimer:null,
+                sendButShow:false
             };
         },
         methods:{
@@ -191,6 +192,7 @@
                 this.$post(url,this.registerData)
                     .then((rsp) => {
                         if(rsp.code === '200'){
+                            this.authCodeDisabled = false;
                             callback();
                         }else{
                             callback(new Error(rsp.message));

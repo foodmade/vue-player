@@ -2,22 +2,7 @@
     <div>
         <!--top-->
         <div class="topDivCss">
-                <!--<img style="height: 700px;" src="../common/img/bj.jpg" />-->
-            <div class="carousel-wrap" id="carousel">
-                // 轮播图列表
-                <transition-group tag="ul" class='slide-ul' name="list">
-                    <li v-for="(list,index) in slideList" v-bind:key="index" v-show="index===currentIndex" @mouseenter="stop" @mouseleave="go">
-                        <a :href="list.clickUrl" >
-                            <img :src="list.image" :alt="list.desc">
-                        </a>
-                    </li>
-                </transition-group>
-                // 轮播图位置指示
-                <div class="carousel-items">
-                    <span v-for="(item,index) in slideList.length" :class="{'active':index===currentIndex}"
-                              @mouseover="change(index)"></span>
-                </div>
-            </div>
+            <img class="homeImg" src="../common/img/bj.jpg"  alt=""/>
             <div class="primaryTitle">
                 <b>
                     <span style="color: rgb(74, 179, 68);">Video </span>
@@ -25,15 +10,9 @@
                 </b>
             </div>
             <div class="top-menu">
-                <ul>
-                    <li>
-                        <a href="/">
-                            首页
-                        </a>
-                    </li>
-                </ul>
+
             </div>
-            <div class="home">
+            <div class="homePan">
                 <div class="homeTitle">
                     <span style="color: rgb(74, 179, 68);">Search </span>
                     <span style="color: rgb(255, 255, 255);">Movies</span>
@@ -46,7 +25,7 @@
                     <span>{{contact}}</span>
                 </div>
                 <div class="movieInput">
-                    <el-input  id="searchInput" clearable @keyup.enter.native="EnterPress" placeholder=" 请输电影昵称~ 回车开始搜索~请不要带有特殊符号" v-model="searchName" class="input-with-select">
+                    <el-input  id="searchInput" clearable @keyup.enter.native="EnterPress" placeholder=" 请输电影昵称~ 回车开始搜索" v-model="searchName" class="input-with-select">
                         <el-select @change="getMovies(2)" v-model="searchType" slot="prepend" placeholder="搜索类型">
                             <el-option  v-for="(item,index) in typeData" :key="index" v-bind:label="item.cate_name"  v-bind:value="item.cate_id"></el-option>
                         </el-select>
@@ -166,6 +145,7 @@
             </div>
             <el-button size="small" type="success" @click.native="loginShowSwitch(true)">弹出login框</el-button>
             <el-button size="small" type="success" @click.native="registerShowSwitch(true)">弹出register框</el-button>
+            <el-button size="small" type="success" @click.native="logout">退出登录</el-button>
         </div>
 </div>
 </template>
@@ -239,26 +219,7 @@
                     videoPoster:"", //封面图
                     visible:true
                 },
-                loading:null,
-                slideList: [
-                    {
-                        "clickUrl": "#",
-                        "desc": "nhwc",
-                        "image": "http://dummyimage.com/1745x492/f1d65b"
-                    },
-                    {
-                        "clickUrl": "#",
-                        "desc": "hxrj",
-                        "image": "http://dummyimage.com/1745x492/40b7ea"
-                    },
-                    {
-                        "clickUrl": "#",
-                        "desc": "rsdh",
-                        "image": "http://dummyimage.com/1745x492/e3c933"
-                    }
-                ],
-                currentIndex: 0,
-                timer: ''
+                loading:null
             }
         },
         methods:{
@@ -433,31 +394,33 @@
             registerShowSwitch(){
                 this.registerVisible = true;
             },
-            created() {
-                //在DOM加载完成后，下个tick中开始轮播
-                this.$nextTick(() => {
-                    this.timer = setInterval(() => {
-                        this.autoPlay()
-                    }, 4000)
+            logout(){
+                let url = _global._CONST_PARAM._HOST + '/logout.do';
+                this.$post(url)
+                    .then((rsp) => {
+                        if(rsp.code === _global._CONST_PARAM._SUCCESS_CODE){
+                            this.GLOBAL.clearSession();
+                            this.$successMsg('注销成功');
+                        }else{
+                            this.$errMsg('注销登录失败 失败原因:'+rsp.message);
+                        }
+                    }).catch((rsp) => {
+                        this.$errMsg('注销登录失败,请重试');
+                });
+            },
+            checkLoginStatus(){
+                let url = _global._CONST_PARAM._HOST + '/isLogin.do';
+                this.$post(url)
+                    .then((rsp) => {
+                        if(rsp.code === _global._CONST_PARAM._SUCCESS_CODE){
+                            this.GLOBAL.refreshLoginStatus(rsp.responseBody);
+                        }else{
+                            this.GLOBAL.refreshLoginStatus(undefined)
+                        }
+                    })
+                    .catch((rsp) => {
+                        this.$errMsg('检查登录状态失败');
                 })
-            },
-            go() {
-                this.timer = setInterval(() => {
-                    this.autoPlay()
-                }, 4000)
-            },
-            stop() {
-                clearInterval(this.timer)
-                this.timer = null
-            },
-            change(index) {
-                this.currentIndex = index
-            },
-            autoPlay() {
-                this.currentIndex++;
-                if (this.currentIndex > this.slideList.length - 1) {
-                    this.currentIndex = 0
-                }
             }
         },
         components: {
@@ -468,6 +431,8 @@
         mounted() {
             //初始化影片分类信息
             this.fetchCateInfo();
+            //从服务器端检查登录状态
+            this.checkLoginStatus();
         }
     }
 
@@ -519,9 +484,10 @@
         left: 62%;
         top: 52px
     }
-    .home {
-        position: relative;
-        left: 50%;
+
+    .homePan {
+        position: absolute;
+        left: 52%;
         top: 35%;
         transform: translate(-50%,-35%);
         width: 60%;
@@ -559,7 +525,7 @@
     .movieInput input {
         border-radius: 30px;
         height: 55px;
-        width: 480px;
+        width: 450px;
         border-style:hidden;   
         color: #666;
         font-size: 13px;
@@ -567,21 +533,7 @@
         padding-left:15px;      /**光标开始位置**/
         padding-right:20px; 
     }
-/*    .movieInput #searchInput {
-        width: 480px;
-    }*/
-    .searchImg {
-        background-image:url('../assets/614.png'); 
-        background-repeat:no-repeat; 
-        background-size:100% 100%;
-        -moz-background-size:100% 100%;
-        position: absolute;
-        left: 60.5%;
-        top: 433px;
-        width: 50px;
-        height: 50px;
-        cursor:pointer;  /**手型**/
-    }
+
     .middle {
         /* background-color: aqua; */
         width: 68%;
@@ -638,15 +590,6 @@
         top: 25%
     }
 
-    .movieFrom {
-        position: absolute;
-        float: left;
-        width: 650px;
-        height: 300px;
-        margin: auto;
-        top: 10%; left: 30%; bottom: 0; right: 0;
-    }
-
     /**重写elementUi css样式*/
     #playerDialog .el-dialog__header {
         background-color: black;
@@ -691,72 +634,6 @@
         border-bottom: 1px solid #696A6B;
         padding-top: 1px;
         margin-bottom: 20px;
-    }
-
-    .carousel-wrap {
-        position: relative;
-        height: 700px;
-        width: 100%;
-        overflow: hidden;
-        // 删除
-        background-color: #fff;
-    }
-
-    .slide-ul {
-        width: 100%;
-        height: 100%;
-    }
-
-    li {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-    }
-
-    img {
-        width: 100%;
-        height: 100%;
-    }
-
-    .carousel-items {
-        position: absolute;
-        z-index: 10;
-        top: 380px;
-        width: 100%;
-        margin: 0 auto;
-        text-align: center;
-        font-size: 0;
-    }
-
-    span {
-        display: inline-block;
-        height: 6px;
-        width: 30px;
-        margin: 0 3px;
-        background-color: #b2b2b2;
-        cursor: pointer;
-    }
-
-    .active {
-        background-color: red;
-    }
-
-    .list-enter-to {
-        transition: all 1s ease;
-        transform: translateX(0);
-    }
-
-    .list-leave-active {
-        transition: all 1s ease;
-        transform: translateX(-100%)
-    }
-
-    .list-enter {
-        transform: translateX(100%)
-    }
-
-    .list-leave {
-        transform: translateX(0)
     }
 </style>
 
