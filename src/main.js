@@ -12,7 +12,6 @@ import {post,fetch,patch,put} from './common/js/http'
 import {isPc,errMsg,successMsg} from './common/js/utils';
 import 'element-ui/lib/theme-chalk/index.css';
 import 'vue-video-player/src/custom-theme.css';
-
 Vue.use(VideoPlayer);
 Vue.use(ElementUI);
 //定义全局变量

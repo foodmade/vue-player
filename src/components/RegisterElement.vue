@@ -1,17 +1,19 @@
 <template>
     <div style="text-align: center">
         <el-form :model="registerData" :rules="rules" ref="registerData" label-width="100px" class="demo-ruleForm">
-            <el-form-item prop="emailMobile">
+            <el-form-item prop="username">
                 <el-input class="CInput"
                           placeholder="QQ邮箱"
                           prefix-icon="custom-user-youjian"
-                          v-model="registerData.email">
+                          clearable
+                          v-model="registerData.username">
                 </el-input>
             </el-form-item>
             <el-form-item prop="code" :rules="[{ required: true, message: '请输入验证码', trigger: 'blur' },{ min: 4, max: 4, message: '请输入4个字符', trigger: 'change' }]">
                 <el-input style="width: 45%;float: left"
                           placeholder="验证码"
                           prefix-icon="custom-user-yanzhengma"
+                          clearable
                           v-model="registerData.code">
                 </el-input>
                 <el-button id="sendCodeBut" @click.native="sendEmail" type="success" :disabled="authCodeDisabled" :loading="butLoading">{{sendCodeBut}}</el-button>
@@ -21,6 +23,7 @@
                 <el-input class="CInput"
                           placeholder="昵称"
                           prefix-icon="custom-user-nicheng"
+                          clearable
                           v-model="registerData.usernick">
                 </el-input>
             </el-form-item>
@@ -28,6 +31,8 @@
                 <el-input class="CInput"
                           placeholder="密码 6~12位"
                           prefix-icon="custom-user-mima"
+                          type="password"
+                          clearable
                           v-model="registerData.password">
                 </el-input>
             </el-form-item>
@@ -35,6 +40,8 @@
                 <el-input class="CInput"
                           placeholder="确认密码"
                           prefix-icon="custom-user-mima1"
+                          type="password"
+                          clearable
                           v-model="registerData.confirmPassword">
                 </el-input>
             </el-form-item>
@@ -65,7 +72,7 @@
                 }else if(!this.checkEmailFormat(value)){
                     callback(new Error('邮箱格式错误!'))
                 }else{
-                    callback();
+                    this.checkEmailIsExist(value,callback);
                 }
             };
             return {
@@ -87,7 +94,7 @@
                     confirmPassword:[
                         { validator: validateConfirmPassword, trigger: 'blur' }
                     ],
-                    email:[
+                    username:[
                         { validator: validEmail, trigger: 'blur'  },
                     ]
                 },
@@ -117,8 +124,8 @@
                 return true;
             },
             sendEmail(){
-                let email = this.registerData.username;
-                if(email === '' || !email){
+                var email = this.registerData.username;
+                if(email === '' || !email || email === undefined){
                     this.$errMsg(this.errMsgConst.pleaseOutEmail);
                     return;
                 }
@@ -126,7 +133,7 @@
                     this.$errMsg(this.errMsgConst.emailFormatInvalid);
                     return;
                 }
-                const url = _global._CONST_PARAM._HOST + "/sendEmail.do?email=" + this.registerData.email;
+                const url = _global._CONST_PARAM._HOST + "/sendEmail.do?email=" + email;
                 this.$fetch(url)
                     .then((rsp)=>{
                         if(rsp.code === '200'){
@@ -169,10 +176,26 @@
                 const url = _global._CONST_PARAM._HOST + "/registerAccount.do";
                 this.$post(url,this.registerData)
                     .then((rsp) =>{
-                        this.$successMsg('success');
+                        if(rsp.code === '200'){
+                            this.$successMsg('注册成功');
+                        }else{
+                            this.$errMsg(rsp.message);
+                        }
                 }).catch((rsp)=>{
-                    this.$errMsg('fail');
+                    this.$errMsg('注册失败,异常错误');
                 })
+            },
+            checkEmailIsExist(val,callback){
+                let url = _global._CONST_PARAM._HOST + '/checkUserNameExist.do';
+                this.registerData.username = val;
+                this.$post(url,this.registerData)
+                    .then((rsp) => {
+                        if(rsp.code === '200'){
+                            callback();
+                        }else{
+                            callback(new Error(rsp.message));
+                        }
+                    })
             }
         },
         mounted() {
@@ -182,6 +205,10 @@
 </script>
 
 <style scoped>
+    button{
+        outline:none;
+    }
+
     #sendCodeBut{
         margin-left: -70px !important;
     }

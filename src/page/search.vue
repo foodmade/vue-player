@@ -2,8 +2,21 @@
     <div>
         <!--top-->
         <div class="topDivCss">
-            <div class="homeImg">
-                <img style="height: 700px;" src="../common/img/bj.jpg" />
+                <!--<img style="height: 700px;" src="../common/img/bj.jpg" />-->
+            <div class="carousel-wrap" id="carousel">
+                // 轮播图列表
+                <transition-group tag="ul" class='slide-ul' name="list">
+                    <li v-for="(list,index) in slideList" v-bind:key="index" v-show="index===currentIndex" @mouseenter="stop" @mouseleave="go">
+                        <a :href="list.clickUrl" >
+                            <img :src="list.image" :alt="list.desc">
+                        </a>
+                    </li>
+                </transition-group>
+                // 轮播图位置指示
+                <div class="carousel-items">
+                    <span v-for="(item,index) in slideList.length" :class="{'active':index===currentIndex}"
+                              @mouseover="change(index)"></span>
+                </div>
             </div>
             <div class="primaryTitle">
                 <b>
@@ -11,10 +24,14 @@
                     <span style="color: rgb(255, 255, 255);">Sources</span>
                 </b>
             </div>
-            <div class="tableItem">
-                <a href="/">
-                    <span>首页</span>
-                </a>
+            <div class="top-menu">
+                <ul>
+                    <li>
+                        <a href="/">
+                            首页
+                        </a>
+                    </li>
+                </ul>
             </div>
             <div class="home">
                 <div class="homeTitle">
@@ -29,14 +46,6 @@
                     <span>{{contact}}</span>
                 </div>
                 <div class="movieInput">
-                   <!-- <el-input
-                            placeholder="  请输入电影名称"
-                            prefix-icon="el-icon-search"
-                            v-model="searchName" maxlength="15" @keyup.enter.native="EnterPress"
-                            clearable>
-                    </el-input>-->
-
-
                     <el-input  id="searchInput" clearable @keyup.enter.native="EnterPress" placeholder=" 请输电影昵称~ 回车开始搜索~请不要带有特殊符号" v-model="searchName" class="input-with-select">
                         <el-select @change="getMovies(2)" v-model="searchType" slot="prepend" placeholder="搜索类型">
                             <el-option  v-for="(item,index) in typeData" :key="index" v-bind:label="item.cate_name"  v-bind:value="item.cate_id"></el-option>
@@ -230,7 +239,26 @@
                     videoPoster:"", //封面图
                     visible:true
                 },
-                loading:null
+                loading:null,
+                slideList: [
+                    {
+                        "clickUrl": "#",
+                        "desc": "nhwc",
+                        "image": "http://dummyimage.com/1745x492/f1d65b"
+                    },
+                    {
+                        "clickUrl": "#",
+                        "desc": "hxrj",
+                        "image": "http://dummyimage.com/1745x492/40b7ea"
+                    },
+                    {
+                        "clickUrl": "#",
+                        "desc": "rsdh",
+                        "image": "http://dummyimage.com/1745x492/e3c933"
+                    }
+                ],
+                currentIndex: 0,
+                timer: ''
             }
         },
         methods:{
@@ -404,6 +432,32 @@
             },
             registerShowSwitch(){
                 this.registerVisible = true;
+            },
+            created() {
+                //在DOM加载完成后，下个tick中开始轮播
+                this.$nextTick(() => {
+                    this.timer = setInterval(() => {
+                        this.autoPlay()
+                    }, 4000)
+                })
+            },
+            go() {
+                this.timer = setInterval(() => {
+                    this.autoPlay()
+                }, 4000)
+            },
+            stop() {
+                clearInterval(this.timer)
+                this.timer = null
+            },
+            change(index) {
+                this.currentIndex = index
+            },
+            autoPlay() {
+                this.currentIndex++;
+                if (this.currentIndex > this.slideList.length - 1) {
+                    this.currentIndex = 0
+                }
             }
         },
         components: {
@@ -424,6 +478,11 @@
         margin:0;
         padding:0;
     }
+
+    button{
+        outline:none;
+    }
+
     .div-inline {
         display:inline
     }
@@ -454,16 +513,10 @@
         left: 20%;
         top :41px;
     }
-    .tableItem {
+    .top-menu {
         position: absolute;
         font-size: 20px;
         left: 62%;
-        top: 52px
-    }
-    .tableItem {
-        position: absolute;
-        font-size: 20px;
-        left: 64%;
         top: 52px
     }
     .home {
@@ -638,6 +691,72 @@
         border-bottom: 1px solid #696A6B;
         padding-top: 1px;
         margin-bottom: 20px;
+    }
+
+    .carousel-wrap {
+        position: relative;
+        height: 700px;
+        width: 100%;
+        overflow: hidden;
+        // 删除
+        background-color: #fff;
+    }
+
+    .slide-ul {
+        width: 100%;
+        height: 100%;
+    }
+
+    li {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    img {
+        width: 100%;
+        height: 100%;
+    }
+
+    .carousel-items {
+        position: absolute;
+        z-index: 10;
+        top: 380px;
+        width: 100%;
+        margin: 0 auto;
+        text-align: center;
+        font-size: 0;
+    }
+
+    span {
+        display: inline-block;
+        height: 6px;
+        width: 30px;
+        margin: 0 3px;
+        background-color: #b2b2b2;
+        cursor: pointer;
+    }
+
+    .active {
+        background-color: red;
+    }
+
+    .list-enter-to {
+        transition: all 1s ease;
+        transform: translateX(0);
+    }
+
+    .list-leave-active {
+        transition: all 1s ease;
+        transform: translateX(-100%)
+    }
+
+    .list-enter {
+        transform: translateX(100%)
+    }
+
+    .list-leave {
+        transform: translateX(0)
     }
 </style>
 
