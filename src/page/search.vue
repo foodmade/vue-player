@@ -10,7 +10,22 @@
                 </b>
             </div>
             <div class="top-menu">
-
+                <ul>
+                    <li v-if="loginStatus">
+                        <el-dropdown @command="handleMenuClick">
+                          <span class="el-dropdown-link">
+                            {{userInfo.userNick}}<i class="el-icon-arrow-down el-icon--right"></i>
+                          </span>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item command="a">设置</el-dropdown-item>
+                                <el-dropdown-item command="logout">退出</el-dropdown-item>
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                    </li>
+                    <li v-else="loginStatus">
+                        <el-button @click.native="loginShowSwitch(true)" size="small" type="success" icon="custom-user-touxiang"></el-button>
+                    </li>
+                </ul>
             </div>
             <div class="homePan">
                 <div class="homeTitle">
@@ -143,9 +158,6 @@
                     </div>
                 </el-dialog>
             </div>
-            <el-button size="small" type="success" @click.native="loginShowSwitch(true)">弹出login框</el-button>
-            <el-button size="small" type="success" @click.native="registerShowSwitch(true)">弹出register框</el-button>
-            <el-button size="small" type="success" @click.native="logout">退出登录</el-button>
         </div>
 </div>
 </template>
@@ -219,7 +231,11 @@
                     videoPoster:"", //封面图
                     visible:true
                 },
-                loading:null
+                loading:null,
+                loginStatus:false,
+                userInfo:{
+
+                }
             }
         },
         methods:{
@@ -401,6 +417,7 @@
                         if(rsp.code === _global._CONST_PARAM._SUCCESS_CODE){
                             this.GLOBAL.clearSession();
                             this.$successMsg('注销成功');
+                            this.GLOBAL.reloadWindow();
                         }else{
                             this.$errMsg('注销登录失败 失败原因:'+rsp.message);
                         }
@@ -421,6 +438,18 @@
                     .catch((rsp) => {
                         this.$errMsg('检查登录状态失败');
                 })
+            },
+            //获取用户登录状态
+            userLoginStatus(){
+                this.loginStatus = this.GLOBAL._CONST_PARAM._ONLINE_STATUS === this.GLOBAL.getUserLoginStatus();
+            },
+            initUserData(){
+                this.userInfo = this.GLOBAL.getUserInfo();
+            },
+            handleMenuClick(command){
+                if(command === 'logout'){
+                    this.logout();
+                }
             }
         },
         components: {
@@ -429,10 +458,14 @@
             registerEml:registerEml
         },
         mounted() {
-            //初始化影片分类信息
-            this.fetchCateInfo();
             //从服务器端检查登录状态
             this.checkLoginStatus();
+            //刷新用户登录状态
+            this.userLoginStatus();
+            //初始化用户数据
+            this.initUserData();
+            //初始化影片分类信息
+            this.fetchCateInfo();
         }
     }
 
@@ -445,6 +478,7 @@
     }
 
     button{
+        border-style: none;
         outline:none;
     }
 
@@ -635,5 +669,13 @@
         padding-top: 1px;
         margin-bottom: 20px;
     }
+
+/*    .top-menu .el-button--primary {
+        background-color : #2f3640!important;
+        !*border-color :#3d4248 !important;*!
+        border-color :red !important;
+        border-style: none;
+        outline:none;
+    }*/
 </style>
 

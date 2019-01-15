@@ -23,9 +23,6 @@ Vue.prototype.$put=put;
 Vue.prototype.$isPc=isPc;
 Vue.prototype.$errMsg=errMsg;
 Vue.prototype.$successMsg=successMsg;
-/*Vue.prototype.$refreshLoginStatus=refreshLoginStatus;
-Vue.prototype.$setLoginStatus=setLoginStatus;
-Vue.prototype.$getUserInfo=getUserInfo;*/
 Vue.prototype.GLOBAL = _global;
 
 Vue.config.productionTip = false;

@@ -30,11 +30,26 @@ function setLoginStatus(userInfo,status){
 }
 
 function getUserInfo() {
-    return JSON.parse(sessionStorage.getItem(_CONST_PARAM._USER_KEY));
+    try {
+        let userData = sessionStorage.getItem(_CONST_PARAM._USER_KEY);
+        if (userData) {
+            return JSON.parse(userData);
+        }
+    } catch (e) {
+        console.log('session域取值失败')
+    }
+}
+
+function getUserLoginStatus() {
+    return sessionStorage.getItem('isLogin');
 }
 
 function clearSession() {
     sessionStorage.clear();
+}
+
+function reloadWindow() {
+    location.reload();
 }
 
 getUserWindowsInfo();
@@ -44,6 +59,8 @@ export default{
     refreshLoginStatus,
     setLoginStatus,
     getUserInfo,
-    clearSession
+    clearSession,
+    getUserLoginStatus,
+    reloadWindow
 }
 </script>

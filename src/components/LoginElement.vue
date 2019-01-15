@@ -92,6 +92,7 @@
                             this.$successMsg('登陆成功');
                             this.GLOBAL.refreshLoginStatus(rsp.responseBody);
                             this.closeLoginWindow();
+                            this.GLOBAL.reloadWindow();
                         }else{
                             this.$errMsg('登陆失败 原因:'+rsp.message);
                         }
