@@ -9,12 +9,17 @@ import "lib-flexible";
 // import 'videojs-contrib-hls'
 import router from "./routers/router"
 import {post,fetch,patch,put} from './common/js/http'
-import {isPc,errMsg,successMsg} from './common/js/utils';
+import {isPc,errMsg,successMsg,scrollTo} from './common/js/utils';
 import 'element-ui/lib/theme-chalk/index.css';
 import 'vue-video-player/src/custom-theme.css';
 import _global from './components/Global';
+import 'swiper/dist/css/swiper.css'
+import VueAwesomeSwiper from 'vue-awesome-swiper'
+
 Vue.use(VideoPlayer);
 Vue.use(ElementUI);
+Vue.use(VueAwesomeSwiper);
+
 //定义全局变量
 Vue.prototype.$post=post;
 Vue.prototype.$fetch=fetch;
@@ -23,6 +28,7 @@ Vue.prototype.$put=put;
 Vue.prototype.$isPc=isPc;
 Vue.prototype.$errMsg=errMsg;
 Vue.prototype.$successMsg=successMsg;
+Vue.prototype.$scrollTo=scrollTo;
 Vue.prototype.GLOBAL = _global;
 
 Vue.config.productionTip = false;

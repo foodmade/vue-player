@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div id="banner">
         <!--top-->
         <div class="topDivCss">
             <img class="homeImg" src="../common/img/bj.jpg"  alt=""/>
@@ -23,7 +23,7 @@
                         </el-dropdown>
                     </li>
                     <li v-else="loginStatus">
-                        <el-button @click.native="loginShowSwitch(true)" size="small" type="success" icon="custom-user-touxiang"></el-button>
+                        <el-button style="background:transparent;" @click.native="loginShowSwitch(true)" size="small" icon="custom-user-touxiang">登陆/注册</el-button>
                     </li>
                 </ul>
             </div>
@@ -58,7 +58,7 @@
         <div >
             <div id="searchItem">
                 <div class="itemParent" v-for="(item,index) in items" :key="index">
-                    <img class="div-inline" style="width:80px;height:95px;" :src="item.coverImg" />
+                    <img class="div-inline" style="width:80px;height:95px;" :src="item.coverImg" :onerror="defaultImg"/>
                     <div class="div-inline movieSpan">
                         <span class="space" style="font-size: 20px;color: #12b7f5;">
                             <font face="宋体">{{item.videoName}}</font>
@@ -93,8 +93,8 @@
                 </div>
             </div>
         </div>
-        <div class="bottom">
-            <div class="ContactInformation">
+        <!--<div class="bottom">-->
+            <!--<div class="ContactInformation">
                 <span><font face="微软雅黑" style="font-size: 20px;color: #6b6b6b">联系我们：</font></span>
                 <br/>
                 <span id="information">
@@ -106,7 +106,7 @@
                         邮箱  ：2210465185@qq.com
                     </font>
                 </span>
-            </div>
+            </div>-->
            <!-- <div class="movieFrom">
                 <el-form :model="ruleForm2" status-icon :rules="rules2" ref="ruleForm2" label-width="100px" class="demo-ruleForm">
                     <el-form-item label="电影名称：" prop="movieName">
@@ -124,40 +124,41 @@
                     </el-form-item>
                 </el-form>
             </div>-->
-            <div >
-                <el-dialog id="playerDialog"
-                        :visible.sync="dialogVisible"
-                        width="50%"
-                        :before-close="handleClose"
-                        :title="movieData.videoName"
-                        v-if='dialogVisible'>
-                    <div>
-                        <my_player @showCityName="updateStatus(true)" :sendData="movieData"></my_player>
-                    </div>
-                </el-dialog>
-            </div>
-            <div style="text-align:center">
-                <el-dialog id="loginDialog"
-                        title="登录"
-                        :visible.sync="LoginVisible"
-                        width="30%"
-                        :before-close="handleLoginDialogClose">
-                    <div>
-                        <loginEml :registerSwitch.sync="registerVisible" :loginSwitch.sync="LoginVisible"></loginEml>
-                    </div>
-                </el-dialog>
-            </div>
-            <div style="text-align:center">
-                <el-dialog id="registerDialog"
-                           title="注册"
-                           :visible.sync="registerVisible"
-                           width="30%"
-                           :before-close="handleRegisterDialogClose">
-                    <div>
-                        <registerEml></registerEml>
-                    </div>
-                </el-dialog>
-            </div>
+
+        <!--</div>-->
+        <div >
+            <el-dialog id="playerDialog"
+                       :visible.sync="dialogVisible"
+                       width="50%"
+                       :before-close="handleClose"
+                       :title="movieData.videoName"
+                       v-if='dialogVisible'>
+                <div>
+                    <my_player @showCityName="updateStatus(true)" :sendData="movieData"></my_player>
+                </div>
+            </el-dialog>
+        </div>
+        <div style="text-align:center">
+            <el-dialog id="loginDialog"
+                       title="登录"
+                       :visible.sync="LoginVisible"
+                       width="30%"
+                       :before-close="handleLoginDialogClose">
+                <div>
+                    <loginEml :registerSwitch.sync="registerVisible" :loginSwitch.sync="LoginVisible"></loginEml>
+                </div>
+            </el-dialog>
+        </div>
+        <div style="text-align:center">
+            <el-dialog id="registerDialog"
+                       title="注册"
+                       :visible.sync="registerVisible"
+                       width="30%"
+                       :before-close="handleRegisterDialogClose">
+                <div>
+                    <registerEml></registerEml>
+                </div>
+            </el-dialog>
         </div>
 </div>
 </template>
@@ -221,7 +222,7 @@
                 },
                 total:0,
                 page:1,
-                pageSize:4,
+                pageSize:15,
                 dialogVisible: false,
                 LoginVisible:false,
                 registerVisible:false,
@@ -235,7 +236,8 @@
                 loginStatus:false,
                 userInfo:{
 
-                }
+                },
+                defaultImg: 'this.src="' + require('../assets/default.jpg') + '"'
             }
         },
         methods:{
@@ -260,6 +262,7 @@
                     .then((response) => {
                         this.loadMovieData(response);
                         this.loading.close();
+                        this.movieLoadFinish();
                     }).catch((rsp)=>{
                         this.errMsg('从服务器获取资源失败 错误信息:'+JSON.stringify(rsp));
                         this.loading.close();
@@ -277,16 +280,18 @@
             },
             fetchCateMovies(){
                 if(this.searchType === ''){
-                    this.errMsg('请选择分类....')
+                    this.errMsg('请选择分类....');
                     return;
                 }
                 this.loadingElmt('查询影片资源...');
-                var url = _global._CONST_PARAM._HOST + '/getMovies.do?videoId='+this.searchType+'&page='+this.page+'&page_size='+this.pageSize;
+                let url = _global._CONST_PARAM._HOST + '/getMovies.do?videoId='+this.searchType+'&page='+this.page+'&page_size='+this.pageSize;
                 this.$fetch(url)
                     .then((rsp)=>{
                         this.loadMovieData(rsp);
                         this.loading.close();
-                    }).catch((rsp=>{
+                        this.movieLoadFinish();
+                    })
+                    .catch((rsp=>{
                     this.errMsg('从服务器获取资源失败 错误信息:'+JSON.stringify(rsp));
                     this.loading.close();
                 }))
@@ -305,7 +310,7 @@
             },
             fetchCateInfo(){
                 this.loadingElmt('加载影片分类信息...');
-                var url = _global._CONST_PARAM._HOST + '/getMovieTypeInfo.do';
+                let url = _global._CONST_PARAM._HOST + '/getMovieTypeInfo.do';
                 this.$fetch(url)
                     .then((rsp)=>{
                     this.typeData = rsp.responseBody;
@@ -378,7 +383,6 @@
                 }
                 this.movieData.videoName=item.videoName;
                 this.movieData.videoUrl=item.videoSourceList[0].videoPath;
-                // this.movieData.videoUrl='https://boba.52kuyun.com/share/UOwkN5yZgB2xWpfa';
                 this.movieData.videoPoster=item.coverImg;
                 this.dialogVisible = true
             },
@@ -450,6 +454,10 @@
                 if(command === 'logout'){
                     this.logout();
                 }
+            },
+            movieLoadFinish(){
+                // this.$successMsg('搜索到'+this.total+'条资源');
+                this.$scrollTo(0,400);
             }
         },
         components: {
@@ -520,9 +528,9 @@
     }
 
     .homePan {
-        position: absolute;
-        left: 52%;
-        top: 35%;
+        position: relative;
+        left: 48%;
+        top: 40%;
         transform: translate(-50%,-35%);
         width: 60%;
         height: 500px;

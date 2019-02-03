@@ -25,3 +25,18 @@ export function successMsg(msg) {
     });
 }
 
+/**
+ * 界面滚动
+ * @param X   X轴
+ * @param Y   Y轴
+ * @param behavior  滚动模式
+ */
+export function scrollTo(X,Y,behavior) {
+    let scrollOpt = {
+        top:Y,
+        left:X,
+        behavior:behavior ? behavior:'smooth'
+    };
+    window.scrollTo(scrollOpt);
+}
+
