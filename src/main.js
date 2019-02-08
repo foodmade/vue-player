@@ -9,7 +9,7 @@ import "lib-flexible";
 // import 'videojs-contrib-hls'
 import router from "./routers/router"
 import {post,fetch,patch,put} from './common/js/http'
-import {isPc,errMsg,successMsg,scrollTo} from './common/js/utils';
+import {isPc,errMsg,successMsg,scrollTo,checkEmailFormat} from './common/js/utils';
 import 'element-ui/lib/theme-chalk/index.css';
 import 'vue-video-player/src/custom-theme.css';
 import _global from './components/Global';
@@ -29,6 +29,7 @@ Vue.prototype.$isPc=isPc;
 Vue.prototype.$errMsg=errMsg;
 Vue.prototype.$successMsg=successMsg;
 Vue.prototype.$scrollTo=scrollTo;
+Vue.prototype.$checkEmailFormat=checkEmailFormat;
 Vue.prototype.GLOBAL = _global;
 
 Vue.config.productionTip = false;

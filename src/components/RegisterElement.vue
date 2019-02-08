@@ -46,7 +46,7 @@
                 </el-input>
             </el-form-item>
             <el-form-item>
-                <el-button id="loginBut" type="primary" @click.native="submitForm('registerData')">注册</el-button>
+                <el-button id="loginBut" type="primary" :loading="loadingBol" @click.native="submitForm('registerData')">注册</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -57,7 +57,7 @@
     export default {
         name: "RegisterElement",
         data() {
-            var validateConfirmPassword = (rule, value, callback) => {
+            let validateConfirmPassword = (rule, value, callback) => {
                 if (value === '') {
                     callback(new Error('请再次输入密码'));
                 } else if (value !== this.registerData.password) {
@@ -66,10 +66,10 @@
                     callback();
                 }
             };
-            var validEmail = (rule, value, callback) => {
+            let validEmail = (rule, value, callback) => {
                 if(value === ''){
                     callback(new Error('请输入邮箱'))
-                }else if(!this.checkEmailFormat(value)){
+                }else if(!this.$checkEmailFormat(value)){
                     callback(new Error('邮箱格式错误!'))
                 }else{
                     this.checkEmailIsExist(value,callback);
@@ -103,7 +103,8 @@
                 retryTime:0,
                 sendCodeBut:'',
                 codeTimer:null,
-                sendButShow:false
+                sendButShow:false,
+                loadingBol:false
             };
         },
         methods:{
@@ -116,16 +117,8 @@
                     }
                 });
             },
-            checkEmailFormat(email){
-                //对电子邮件的验证
-                var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
-                if(!myreg.test(email)) {
-                    return false;
-                }
-                return true;
-            },
             sendEmail(){
-                var email = this.registerData.username;
+                let email = this.registerData.username;
                 if(email === '' || !email || email === undefined){
                     this.$errMsg(this.errMsgConst.pleaseOutEmail);
                     return;
@@ -174,16 +167,19 @@
                 clearInterval(timer);
             },
             submitAccountInfo(){
+                this.loadingBol=true;
                 const url = _global._CONST_PARAM._HOST + "/registerAccount.do";
                 this.$post(url,this.registerData)
                     .then((rsp) =>{
-                        if(rsp.code === '200'){
+                        if(rsp.code === _global._CONST_PARAM._SUCCESS_CODE){
                             this.$successMsg('注册成功');
                         }else{
                             this.$errMsg(rsp.message);
                         }
+                        this.loadingBol=false;
                 }).catch((rsp)=>{
                     this.$errMsg('注册失败,异常错误');
+                    this.loadingBol=false;
                 })
             },
             checkEmailIsExist(val,callback){

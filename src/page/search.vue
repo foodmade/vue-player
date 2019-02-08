@@ -23,7 +23,7 @@
                         </el-dropdown>
                     </li>
                     <li v-else="loginStatus">
-                        <el-button style="background:transparent;" @click.native="loginShowSwitch(true)" size="small" icon="custom-user-touxiang">登陆/注册</el-button>
+                        <el-button id="userLogin" @click.native="loginShowSwitch(true)" size="small" icon="custom-user-touxiang">登陆/注册</el-button>
                     </li>
                 </ul>
             </div>
@@ -145,7 +145,7 @@
                        width="30%"
                        :before-close="handleLoginDialogClose">
                 <div>
-                    <loginEml :registerSwitch.sync="registerVisible" :loginSwitch.sync="LoginVisible"></loginEml>
+                    <loginEml :registerSwitch.sync="registerVisible" :loginSwitch.sync="LoginVisible" :pwdBackSwitch.sync="pwdBackVisible"></loginEml>
                 </div>
             </el-dialog>
         </div>
@@ -160,6 +160,18 @@
                 </div>
             </el-dialog>
         </div>
+
+        <div style="text-align:center">
+            <el-dialog id="backPwdDialog"
+                       title="找回密码"
+                       :visible.sync="pwdBackVisible"
+                       width="50%"
+                       :before-close="hanlePwdBackDialogClose">
+                <div>
+                    <pwdBackEml></pwdBackEml>
+                </div>
+            </el-dialog>
+        </div>
 </div>
 </template>
 
@@ -170,25 +182,26 @@
     import _global from "../components/Global";
     import loginEml from "../components/LoginElement";
     import registerEml from "../components/RegisterElement";
+    import pwdBackEml from "../components/PasswordBackElement";
 
 
     export default {
         data(){
-            var validateAuthCode = (rule, value, callback) => {
+            let validateAuthCode = (rule, value, callback) => {
                 if(value === ''){
                     callback(new Error('验证码不能为空'));
                 }else{
                     callback();
                 }
             };
-            var validateMovieName = (rule, value, callback) => {
+            let validateMovieName = (rule, value, callback) => {
                 if (value === '') {
                     callback(new Error('请输入电影名称'));
                 } else {
                     callback();
                 }
             };
-            var validateMobile = (rule, value, callback) => {
+            let validateMobile = (rule, value, callback) => {
                 if (value === '') {
                     callback(new Error('请输入联系方式'));
                 }  else {
@@ -226,6 +239,7 @@
                 dialogVisible: false,
                 LoginVisible:false,
                 registerVisible:false,
+                pwdBackVisible:false,
                 movieData:{
                     videoName:"", //视频名称
                     videoUrl:"",  //视频地址
@@ -376,6 +390,9 @@
             handleRegisterDialogClose(done){
                 done();
             },
+            hanlePwdBackDialogClose(done){
+                done();
+            },
             playerMovie(item){
                 if(item === undefined || item.videoSourceList.length === 0){
                     this.errMsg('哎呀~ 视频地址不见啦,换一个看看吧');
@@ -463,7 +480,8 @@
         components: {
             my_player: my_player,
             loginEml:loginEml,
-            registerEml:registerEml
+            registerEml:registerEml,
+            pwdBackEml:pwdBackEml
         },
         mounted() {
             //从服务器端检查登录状态
@@ -676,6 +694,11 @@
         border-bottom: 1px solid #696A6B;
         padding-top: 1px;
         margin-bottom: 20px;
+    }
+
+    #userLogin {
+        border: 0 !important;
+        background:transparent;
     }
 
 /*    .top-menu .el-button--primary {

@@ -40,3 +40,15 @@ export function scrollTo(X,Y,behavior) {
     window.scrollTo(scrollOpt);
 }
 
+/**
+ * 邮箱格式检查
+ * @param email
+ * @returns {boolean}
+ */
+export function checkEmailFormat(email){
+    //对电子邮件的验证
+    let myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+    return myreg.test(email);
+
+}
+

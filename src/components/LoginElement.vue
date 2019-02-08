@@ -17,7 +17,7 @@
                         type="password"
                         v-model="userInfo.password">
                 </el-input>
-                <a href="/" class="forget-password-link">忘记密码?</a>
+                <a href="javascript:void(0)" v-on:click="pwdBackApi" class="forget-password-link">忘记密码?</a>
             </el-form-item>
             <el-form-item>
                 <div id="registerDiv" style="text-align:left;position: relative">
@@ -28,7 +28,7 @@
                 </div>
             </el-form-item>
             <el-form-item>
-                <el-button id="loginBut" type="primary" @click.native="submitForm('userInfo')">登录</el-button>
+                <el-button id="loginBut" type="primary" :loading="loadingBol" @click.native="submitForm('userInfo')">登录</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -45,7 +45,8 @@
                     password: '',
                     code: ''
                 },
-                rememberPwd:1
+                rememberPwd:1,
+                loadingBol:false
             };
         },
         props:{
@@ -54,6 +55,10 @@
                 default:false
             },
             registerSwitch:{
+                type:Boolean,
+                default:false
+            },
+            pwdBackSwitch:{
                 type:Boolean,
                 default:false
             }
@@ -74,6 +79,11 @@
                 this.$emit('update:registerSwitch', true);
             },
 
+            pwdBackApi(){
+                this.$emit('update:loginSwitch', false);
+                this.$emit('update:pwdBackSwitch',true);
+            },
+
             closeLoginWindow(){
                 this.$emit('update:loginSwitch', false);
             },
@@ -85,6 +95,7 @@
                 if(this.userInfo.password === ''){
                     this.$errMsg('请输入密码');
                 }
+                this.loadingBol=true;
                 let url = _global._CONST_PARAM._HOST + '/login.do';
                 this.$post(url,this.userInfo)
                     .then((rsp) => {
@@ -96,7 +107,11 @@
                         }else{
                             this.$errMsg('登陆失败 原因:'+rsp.message);
                         }
-                    })
+                        this.loadingBol=false;
+                    }).catch(()=>{
+                        this.$errMsg('服务器连接失败,请稍后再试');
+                        this.loadingBol=false;
+                })
             },
         }
     }
