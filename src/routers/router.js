@@ -1,29 +1,26 @@
 // 引入组件
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from "../page/page-home"
-import Player from "../page/player"
-import Search from "../page/search"
 Vue.use(VueRouter);
 const routers = [
     {
         path:"/",
-        redirect: '/home'
+        redirect: '/search'
     },
-    {
-        path:"/home",
-        name: 'home',
-        component: Home
-    },
+    // {
+    //     path:"/home",
+    //     name: 'home',
+    //     component:resolve => require(['../page/page-home'], resolve)
+    // },
     {
         path: "/player",
         name: 'player',
-        component: Player
+        component:resolve => require(['../page/player'], resolve)
     },
     {
         path: "/search",
         name: "search",
-        component:Search
+        component:resolve => require(['../page/search'], resolve)
     }
 ]
 const router = new VueRouter({
