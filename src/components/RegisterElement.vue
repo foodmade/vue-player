@@ -123,7 +123,7 @@
                     this.$errMsg(this.errMsgConst.pleaseOutEmail);
                     return;
                 }
-                if(!this.checkEmailFormat(email)){
+                if(!this.$checkEmailFormat(email)){
                     this.$errMsg(this.errMsgConst.emailFormatInvalid);
                     return;
                 }
