@@ -2,18 +2,24 @@
     <div id="banner">
         <!--top-->
         <div class="topDivCss">
+            <div>
+                <jmenu :favoriteActive.sync='boxControl.boxActive'></jmenu>
+            </div>
+            <delimitBox :active.sync="boxControl.boxActive"
+                        :title.sync="boxControl.title"
+                        :LoginVisible.sync="LoginVisible"
+                        :loginStatus.sync="loginStatus"></delimitBox>
             <img class="homeImg" src="../common/img/bj.jpg"  alt=""/>
             <div class="primaryTitle">
                 <b>
-                    <span style="color: rgb(74, 179, 68);">Video </span>
-                    <span style="color: rgb(255, 255, 255);">Sources</span>
+                    <span style="color: #ffd04b;"></span>
                 </b>
             </div>
             <div class="top-menu">
                 <ul>
-                    <li v-if="loginStatus">
+                    <span v-if="loginStatus" class="accountArea">
                         <el-dropdown @command="handleMenuClick">
-                          <span class="el-dropdown-link">
+                          <span class="el-dropdown-link" style="cursor: pointer">
                             {{userInfo.userNick}}<i class="el-icon-arrow-down el-icon--right"></i>
                           </span>
                             <el-dropdown-menu slot="dropdown">
@@ -21,10 +27,10 @@
                                 <el-dropdown-item command="logout">退出</el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
-                    </li>
-                    <li v-else="loginStatus">
+                    </span>
+                    <span v-else class="accountArea">
                         <el-button id="userLogin" @click.native="loginShowSwitch(true)" size="small" icon="custom-user-touxiang">登陆/注册</el-button>
-                    </li>
+                    </span>
                 </ul>
             </div>
             <div class="homePan">
@@ -183,6 +189,8 @@
     import loginEml from "../components/LoginElement";
     import registerEml from "../components/RegisterElement";
     import pwdBackEml from "../components/PasswordBackElement";
+    import jmenu from "../components/JMenu";
+    import delimitBox from "../components/drop-box";
 
 
     export default {
@@ -251,7 +259,11 @@
                 userInfo:{
 
                 },
-                defaultImg: 'this.src="' + require('../assets/default.jpg') + '"'
+                defaultImg: 'this.src="' + require('../assets/default.jpg') + '"',
+                boxControl:{
+                    boxActive:false,
+                    title:'我的收藏'
+                }
             }
         },
         methods:{
@@ -267,7 +279,7 @@
                     this.pageSize =4;
                 }
                 this.loadingElmt('查询影片资源...');
-                var url = _global._CONST_PARAM._HOST +
+                let url = _global._CONST_PARAM._HOST +
                     '/getMoviesByName.do?videoName='+
                     this.searchName+'&page='+
                     this.page+'&page_size='+
@@ -287,6 +299,7 @@
                 if(type === 1){
                     this.searchType='';
                     this.fetchMovies();
+
                 }else if(type === 2){
                     this.searchName='';
                     this.fetchCateMovies();
@@ -455,6 +468,10 @@
                         }else{
                             this.GLOBAL.refreshLoginStatus(undefined)
                         }
+                        //刷新用户登录状态
+                        this.userLoginStatus();
+                        //初始化用户数据
+                        this.initUserData();
                     })
                     .catch((rsp) => {
                         this.$errMsg('检查登录状态失败');
@@ -475,21 +492,22 @@
             movieLoadFinish(){
                 // this.$successMsg('搜索到'+this.total+'条资源');
                 this.$scrollTo(0,400);
+            },
+            boxActiveState(state){
+                this.boxControl.boxActive = state;
             }
         },
         components: {
             my_player: my_player,
             loginEml:loginEml,
             registerEml:registerEml,
-            pwdBackEml:pwdBackEml
+            pwdBackEml:pwdBackEml,
+            jmenu:jmenu,
+            delimitBox:delimitBox
         },
         mounted() {
             //从服务器端检查登录状态
             this.checkLoginStatus();
-            //刷新用户登录状态
-            this.userLoginStatus();
-            //初始化用户数据
-            this.initUserData();
             //初始化影片分类信息
             this.fetchCateInfo();
         }
@@ -605,7 +623,7 @@
     .middle #searchResult {
         position: relative;
         left:3%;
-        top:4%;
+        top:10%;
         height: 10%;
         width: 100%;
     }
@@ -619,7 +637,7 @@
     .middle #searchItem {
         position: absolute;
         left:26%;
-        top:800px;
+        top:890px;
         /* background-color: rgb(255, 127, 133); */
         width: 900px;
         height: auto;
@@ -697,8 +715,15 @@
     }
 
     #userLogin {
+        position: relative;
         border: 0 !important;
         background:transparent;
+    }
+
+    .accountArea {
+        position: relative;
+        top : -40px;
+        left: 180px;
     }
 
 /*    .top-menu .el-button--primary {
