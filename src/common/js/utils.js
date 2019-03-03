@@ -52,3 +52,11 @@ export function checkEmailFormat(email){
 
 }
 
+/**
+ * 删除所有空格
+ * @returns {*}
+ */
+export function removeAllSpace(str) {
+    return str.replace(/\s+/g, "");
+}
+

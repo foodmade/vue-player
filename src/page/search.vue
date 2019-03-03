@@ -64,10 +64,10 @@
         <div >
             <div id="searchItem">
                 <div class="itemParent" v-for="(item,index) in items" :key="index">
-                    <img class="div-inline" style="width:80px;height:95px;" :src="item.coverImg" :onerror="defaultImg"/>
+                    <img class="div-inline" style="width:92px;height:103px;top: -9%;position: relative" :src="item.coverImg" :onerror="defaultImg"/>
                     <div class="div-inline movieSpan">
                         <span class="space" style="font-size: 20px;color: #12b7f5;">
-                            <font face="宋体">{{item.videoName}}</font>
+                            <font face="宋体">{{surpassMaxLengthHandler(item.videoName)}}</font>
                         </span>
                         <br/>
                         <span class="space" style="font-size: 12px;color: #de2323;">
@@ -75,13 +75,28 @@
                         </span>
                         <br/>
                         <span class="space" style="font-size: 10px;color: #6b6b6b;">
-                            <font face="微软雅黑">主演：{{item.figures.actor.toString()}}</font>
+                            <font face="微软雅黑">主演：{{surpassMaxLengthHandler(item.figures.actor.toString())}}</font>
                         </span>
                         <br/>
                         <span class="space" style="font-size: 10px;color: #6b6b6b;">
-                            <font face="微软雅黑">导演：{{item.figures.director.toString()}}</font>
+                            <font face="微软雅黑">导演：{{surpassMaxLengthHandler(item.figures.director.toString())}}</font>
                         </span>
                         <br/>
+                        <div class="detailMovie">
+                            <span class="favorite" v-on:click="dotFvr(item)">
+                                <svg v-if="loginStatus" class="icon IconSize" aria-hidden="true" >
+　　                                  <use :xlink:href="'#' + 'custom-user-xihuan-dian'"></use>
+                                </svg>
+                                <i v-else class="custom-user-xihuan7 icon IconSize"></i>
+                            </span>
+
+
+                            <el-tooltip content="点个赞~" placement="top">
+                                <el-button icon="custom-user-dianzan1" class="dot button_border tagI" v-on:click="dotMovie(item)">
+                                    <i style="font-size: 1.2em;">&nbsp{{(item.dotcnt === undefined)?0:item.dotcnt}}</i>
+                                </el-button>
+                            </el-tooltip>
+                        </div>
                     </div>
                     <el-button @click.native="playerMovie(item)" type="success" style="outline:none;float: right"  size="small" round>播放</el-button>
                 </div>
@@ -490,11 +505,42 @@
                 }
             },
             movieLoadFinish(){
-                // this.$successMsg('搜索到'+this.total+'条资源');
                 this.$scrollTo(0,400);
             },
-            boxActiveState(state){
-                this.boxControl.boxActive = state;
+            //处理字符超长问题
+            surpassMaxLengthHandler(str){
+                let videoName = this.$removeAllSpace(str);
+                if(videoName.length > this.GLOBAL._CONST_PARAM._MAX_NAME_LENGTH){
+                    videoName = videoName.substring(0,this.GLOBAL._CONST_PARAM._MAX_NAME_LENGTH);
+                    videoName += '...';
+                }
+                console.log(videoName);
+                return videoName;
+            },
+            //点赞
+            dotMovie(item){
+                let url = _global._CONST_PARAM._HOST + '/movieDotPraise.do';
+                this.$post(url,item)
+                    .then((rsp) => {
+                        if(rsp.code === _global._CONST_PARAM._SUCCESS_CODE){
+                            item.dotcnt ++;
+                        }else{
+                            this.$errMsg('操作失败:'+rsp.message);
+                        }
+                    })
+                    .catch(()=>{
+                    this.$errMsg('服务器连接失败,请稍后再试');
+                })
+
+            },
+            //喜欢
+            dotFvr(item){
+                //检查是否登录
+                if(!this.loginStatus){
+                    this.$errMsg('请登录');
+                    return;
+                }
+                this.$successMsg('success');
             }
         },
         components: {
@@ -521,6 +567,13 @@
         padding:0;
     }
 
+    body {
+        font-family:Arial,Helvetica,sans-serif;font-size:100%;
+        line-height:1.5em;color:#4e4e4e;
+        min-width:920px;
+        border-top:10px solid #0c0e0e
+    }
+
     button{
         border-style: none;
         outline:none;
@@ -541,9 +594,9 @@
 /*        background-color: #0fb053;*/
         position: absolute;
         margin:-6px 5px 5px 10px;
-        height: 18%;
-        width: 90%;
-        pointer-events: none;
+        /*height: 18%;*/
+        width: 75%;
+        /*pointer-events: none;*/
     }
     .topDivCss {
         height: 700px;
@@ -566,7 +619,7 @@
     .homePan {
         position: relative;
         left: 48%;
-        top: 40%;
+        top: 52%;
         transform: translate(-50%,-35%);
         width: 60%;
         height: 500px;
@@ -583,14 +636,14 @@
         font-size: 14px;
         color:rgba(240, 248, 255, 0.678);
         left: 31%;
-        top: 10%;
+        top: 33%;
         width: 600px;
     }
     .contactMode {
         position: relative;
         font-size: 22px;
-        left: 38%;
-        top: 14%;
+        left: 41%;
+        top: 18%;
         color:rgba(240, 248, 255, 0.911);
         width: 300px;
     }
@@ -722,8 +775,59 @@
 
     .accountArea {
         position: relative;
-        top : -40px;
+        top : -31px;
         left: 180px;
+    }
+
+    .favorite{
+        position: relative;
+        top: -21%;
+        left: 0.5%;
+        width: 0px;
+        height: 0px;
+        cursor: pointer;
+        font-size: 1em;
+
+    }
+
+    .dot {
+        position: relative;
+        top: -6.2%;
+        left: 10%;
+        width: 0;
+        height: 0;
+        cursor: pointer;
+        font-size: 1em;
+    }
+
+    .detailMovie {
+        height: 24px;
+        position: relative;
+        /*background-color: #0fb053;*/
+        width: 97px;
+        top: 10.2%;
+    }
+
+    .tagI i{
+        position: relative;
+        top: -9px;
+        left: -17px;
+    }
+
+    .button_border {
+        border: 0;
+        background: transparent !important;
+        outline: none;
+    }
+
+    .el-button+.el-button {
+        width: 0px;
+        height: 0px;
+    }
+
+    .IconSize {
+        width: 25px;
+        height: 25px
     }
 
 /*    .top-menu .el-button--primary {
