@@ -635,22 +635,22 @@
         position: relative;
         font-size: 14px;
         color:rgba(240, 248, 255, 0.678);
-        left: 31%;
+        left: 34%;
         top: 33%;
         width: 600px;
     }
     .contactMode {
         position: relative;
         font-size: 22px;
-        left: 41%;
+        left: 37%;
         top: 18%;
         color:rgba(240, 248, 255, 0.911);
         width: 300px;
     }
     .movieInput {
         position: relative;
-        left: 23%;
-        top: 38%;
+        left: 26%;
+        top: 44%;
         color:#666;
     }
     .movieInput input {
@@ -781,7 +781,7 @@
 
     .favorite{
         position: relative;
-        top: -21%;
+        top: -48%;
         left: 0.5%;
         width: 0px;
         height: 0px;
