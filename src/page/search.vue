@@ -28,7 +28,7 @@
                             </el-dropdown-menu>
                         </el-dropdown>
                     </span>
-                    <span v-else class="accountArea">
+                    <span v-else class="accountArea1">
                         <el-button id="userLogin" @click.native="loginShowSwitch(true)" size="small" icon="custom-user-touxiang">登陆/注册</el-button>
                     </span>
                 </ul>
@@ -83,11 +83,13 @@
                         </span>
                         <br/>
                         <div class="detailMovie">
-                            <span class="favorite" v-on:click="dotFvr(item)">
-                                <svg v-if="loginStatus" class="icon IconSize" aria-hidden="true" >
+                            <span class="favorite1" v-on:click="dotFvr(item)" v-if="loginStatus">
+                                <svg  class="icon IconSize" aria-hidden="true" >
 　　                                  <use :xlink:href="'#' + 'custom-user-xihuan-dian'"></use>
                                 </svg>
-                                <i v-else class="custom-user-xihuan7 icon IconSize"></i>
+                            </span>
+                            <span class="favorite" v-else v-on:click="collection(item)">
+                                <i class="custom-user-xihuan7 icon IconSize"></i>
                             </span>
 
 
@@ -570,8 +572,13 @@
     body {
         font-family:Arial,Helvetica,sans-serif;font-size:100%;
         line-height:1.5em;color:#4e4e4e;
-        min-width:920px;
-        border-top:10px solid #0c0e0e
+        width: 100%;
+    }
+
+    /*解决出现横向滚动条的问*/
+    div#banner {
+        width: 100%;
+        overflow:hidden
     }
 
     button{
@@ -610,16 +617,16 @@
         top :41px;
     }
     .top-menu {
-        position: absolute;
+        position: relative;
         font-size: 20px;
         left: 62%;
-        top: 52px
+        top: -9px
     }
 
     .homePan {
         position: relative;
         left: 48%;
-        top: 52%;
+        top: 40%;
         transform: translate(-50%,-35%);
         width: 60%;
         height: 500px;
@@ -635,21 +642,21 @@
         position: relative;
         font-size: 14px;
         color:rgba(240, 248, 255, 0.678);
-        left: 34%;
+        left: 32%;
         top: 33%;
         width: 600px;
     }
     .contactMode {
         position: relative;
         font-size: 22px;
-        left: 37%;
+        left: 39%;
         top: 18%;
         color:rgba(240, 248, 255, 0.911);
         width: 300px;
     }
     .movieInput {
         position: relative;
-        left: 26%;
+        left: 25%;
         top: 44%;
         color:#666;
     }
@@ -779,15 +786,30 @@
         left: 180px;
     }
 
-    .favorite{
+    .accountArea1 {
         position: relative;
-        top: -48%;
+        top : -40px;
+        left: 180px;
+    }
+
+    .favorite{
+         position: relative;
+         top: -48%;
+         left: 0.5%;
+         width: 0px;
+         height: 0px;
+         cursor: pointer;
+         font-size: 1em;
+     }
+
+    .favorite1{
+        position: relative;
+        top: -22%;
         left: 0.5%;
         width: 0px;
         height: 0px;
         cursor: pointer;
         font-size: 1em;
-
     }
 
     .dot {

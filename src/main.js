@@ -13,9 +13,20 @@ import 'element-ui/lib/theme-chalk/index.css';
 // import 'vue-video-player/src/custom-theme.css';
 import _global from './components/Global';
 import './assets/icon/iconfont';
+import ba from 'vue-ba';
+
+//解决图片403错误
+let head = document.getElementsByTagName('head');
+let meta = document.createElement('meta');
+meta.name = 'referrer';
+meta.content = 'no-referrer';
+
+head[0].appendChild(meta);
 
 Vue.use(ElementUI);
-
+//百度收录
+Vue.use(ba, "99b3fbc92a8358c029dd29c27d214524");
+Vue.use(ba, { siteId: "99b3fbc92a8358c029dd29c27d214524" });
 //定义全局变量
 Vue.prototype.$post=post;
 Vue.prototype.$fetch=fetch;

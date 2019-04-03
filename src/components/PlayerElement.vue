@@ -53,8 +53,10 @@
                 if( this.video === undefined){
                     return;
                 }
+                console.log('调用stop video');
                 this.video.pause();
                 this.video.currentTime = 0;
+                this.video = undefined;
             },
             parseMovieType(){
                 if(this.sendData === undefined || this.sendData.videoUrl === ''){
