@@ -5,7 +5,10 @@ Vue.use(VueRouter);
 const routers = [
     {
         path:"/",
-        redirect: '/search'
+        redirect: '/search',
+        meta:{
+            'title':'我要看电影,最全电影资源网站'
+        },
     },
     // {
     //     path:"/home",
@@ -15,15 +18,24 @@ const routers = [
     {
         path: "/player",
         name: 'player',
+        meta:{
+            'title':'我要看电影,最全电影资源网站'
+        },
         component:resolve => require(['../page/player'], resolve)
     },
     {
         path: "/search",
         name: "search",
+        meta:{
+            'title':'我要看电影,最全电影资源网站'
+        },
         component:resolve => require(['../page/search'], resolve)
     }
-]
+];
+
+
 const router = new VueRouter({
     routes: routers
   });
-  export default router
+
+export default router

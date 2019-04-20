@@ -18,6 +18,7 @@ import ba from 'vue-ba';
 //解决图片403错误
 let head = document.getElementsByTagName('head');
 let meta = document.createElement('meta');
+document.title = '我要看电影|SearchMovies|最全的电影播放网站|任何大片免费看';
 meta.name = 'referrer';
 meta.content = 'no-referrer';
 

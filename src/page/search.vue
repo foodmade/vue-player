@@ -9,7 +9,7 @@
                         :title.sync="boxControl.title"
                         :LoginVisible.sync="LoginVisible"
                         :loginStatus.sync="loginStatus"></delimitBox>
-            <img class="homeImg" src="../common/img/bj.jpg"  alt=""/>
+            <img class="homeImg" src="../common/img/bj-15.jpg"  alt=""/>
             <div class="primaryTitle">
                 <b>
                     <span style="color: #ffd04b;"></span>
